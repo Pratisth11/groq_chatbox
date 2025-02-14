@@ -1,2 +1,5 @@
 requests
+groq
+instructor
+pydantic
 
