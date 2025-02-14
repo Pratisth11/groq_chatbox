@@ -20,19 +20,18 @@ def run(topic):
 
     try:
         client = Groq(api_key=api_key)
-        client = instructor.from_groq(client, mode=instructor.Mode.JSON, response_model=Character)
-
+        client = instructor.from_groq(client, mode=instructor.Mode.JSON)  
 
         response = client.chat.completions.create(
             model="mixtral-8x7b-32768",
-            messages=[{"role": "user", "content": f"Tell me about {topic}"}]
+            messages=[{"role": "user", "content": f"Tell me about {topic}"}],
+            response_model=Character  
         )
 
-        print(response)  # Adjust how the response is parsed based on API output
+        print(response.model_dump_json(indent=2))  
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 if __name__ == "__main__":
     while True:
