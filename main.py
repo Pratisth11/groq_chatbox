@@ -2,8 +2,8 @@ import requests
 import os
 from pydantic import BaseModel, Field
 from typing import List
-from groq import Groq
 import instructor
+from groq import Groq  # Ensure this import is correct
 
 class Character(BaseModel):
     name: str
@@ -22,17 +22,17 @@ def run(topic):
         client = Groq(api_key=api_key)
         client = instructor.from_groq(client, mode=instructor.Mode.JSON)
 
-        resp = client.chat.completions.create(
+        response = client.chat.completions.create(
             model="mixtral-8x7b-32768",
-            messages=[{"role": "user", "content": f"Tell me about {topic}"}],
-            response_model=Character,
+            messages=[{"role": "user", "content": f"Tell me about {topic}"}]
         )
-        print(resp.model_dump_json(indent=2))
+
+        print(response)  # Adjust how the response is parsed based on API output
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     while True:
         user_input = get_user_input()
         if user_input.lower() == 'exit':
