@@ -1,27 +1,40 @@
 import requests
+import os
+from pydantic import BaseModel, Field
+from typing import List
+from groq import Groq
+import instructor
 
-API_KEY = "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"
-API_URL = "https://api.groq.com/v1/chat/completions"
+class Character(BaseModel):
+    name: str
+    fact: List[str] = Field(..., description="A list of facts about the subject")
 
-def chat_with_groq():
-    print("Groq Chatbot (type 'quit' to exit)")
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == "quit":
-            print("Goodbye!")
-            break
+def get_user_input():
+    return input("Enter a topic to learn about (or 'exit' to quit): ")
 
-        response = requests.post(
-            API_URL,
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"prompt": user_input, "max_tokens": 100}
+def run(topic):
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        print("Error: GROQ_API_KEY environment variable not set.")
+        return
+
+    try:
+        client = Groq(api_key=api_key)
+        client = instructor.from_groq(client, mode=instructor.Mode.JSON)
+
+        resp = client.chat.completions.create(
+            model="mixtral-8x7b-32768",
+            messages=[{"role": "user", "content": f"Tell me about {topic}"}],
+            response_model=Character,
         )
+        print(resp.model_dump_json(indent=2))
 
-        if response.status_code == 200:
-            print("Groq:", response.json().get("choices", [{}])[0].get("text", "No response"))
-        else:
-            print("Error:", response.text)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-if __name__ == "__main__":
-    chat_with_groq()
-
+if _name_ == "_main_":
+    while True:
+        user_input = get_user_input()
+        if user_input.lower() == 'exit':
+            break
+        run(user_input)
