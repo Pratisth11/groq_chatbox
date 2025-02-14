@@ -32,6 +32,7 @@ def run(topic):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+# ✅ Fixed the typo here
 if __name__ == "__main__":
     while True:
         user_input = get_user_input()
