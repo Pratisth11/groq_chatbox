@@ -20,7 +20,8 @@ def run(topic):
 
     try:
         client = Groq(api_key=api_key)
-        client = instructor.from_groq(client, mode=instructor.Mode.JSON)
+        client = instructor.from_groq(client, mode=instructor.Mode.JSON, response_model=Character)
+
 
         response = client.chat.completions.create(
             model="mixtral-8x7b-32768",
